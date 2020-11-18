@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "807438244174",
+    "firebase_url": "https://kbgiffmap.firebaseio.com",
+    "project_id": "kbgiffmap",
+    "storage_bucket": "kbgiffmap.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:807438244174:android:955b76d46efa50154f261f",
+        "android_client_info": {
+          "package_name": "com.giffarinefactory.kbgiffarine"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "807438244174-klecvbi65hio1cm7ga4vgiam5idoqfpb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBJwnDZSF48P_LuUg2LH4yHvxlFoAykP4c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "807438244174-klecvbi65hio1cm7ga4vgiam5idoqfpb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
