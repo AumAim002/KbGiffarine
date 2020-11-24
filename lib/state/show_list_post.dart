@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-
+import 'package:kbgiffarine/state/add_post.dart';
 
 class ShowListPost extends StatefulWidget {
   @override
@@ -12,6 +11,14 @@ class _ShowListPostState extends State<ShowListPost> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Text('This is show List Post'),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => AddPost(),
+            )),
+        child: Text('Post'),
+      ),
     );
   }
 }
