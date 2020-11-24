@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:kbgiffarine/state/my_service.dart';
 import 'package:kbgiffarine/state/register.dart';
+import 'package:kbgiffarine/utility/normal_dialog.dart';
 
 class Authen extends StatefulWidget {
   @override
@@ -11,8 +12,10 @@ class Authen extends StatefulWidget {
 }
 
 class _AuthenState extends State<Authen> {
+  String user, password; //ประกาศตัวแปร
+  bool statusRedEye = true;
 
-@override
+  @override
   void initState() {
     // TODO: implement initState
     super.initState();
@@ -39,7 +42,8 @@ class _AuthenState extends State<Authen> {
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
-            gradient: RadialGradient(center: Alignment(0,-0.5),
+            gradient: RadialGradient(
+          center: Alignment(0, -0.5),
           radius: 1.0,
           colors: <Color>[Colors.white, Colors.pinkAccent],
         )),
@@ -64,11 +68,16 @@ class _AuthenState extends State<Authen> {
 
   TextButton buildTextButton() {
     return TextButton(
-                onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => Register(),),);
-                },
-                child: Text('New Register'),
-              );
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => Register(),
+          ),
+        );
+      },
+      child: Text('New Register'),
+    );
   }
 
   Container buildLogin() {
@@ -76,7 +85,16 @@ class _AuthenState extends State<Authen> {
       margin: EdgeInsets.only(top: 16),
       width: 200,
       child: ElevatedButton(
-        onPressed: () {},
+        onPressed: () {
+          if (user == null ||
+              user.isEmpty ||
+              password == null ||
+              password.isEmpty) {
+            normalDialog(context, 'มีช่องว่าง ? กรุณากรอกให้ครบทุกช่องค่ะ ');
+          } else {
+            checkAuthen();
+          }
+        },
         child: Text('Login'),
       ),
     );
@@ -87,6 +105,8 @@ class _AuthenState extends State<Authen> {
       margin: EdgeInsets.only(top: 16),
       width: 200,
       child: TextField(
+        onChanged: (value) => user = value.trim(),
+        keyboardType: TextInputType.emailAddress,
         decoration: InputDecoration(
           prefixIcon: Icon(Icons.account_box),
           labelText: 'User Name :',
@@ -101,8 +121,19 @@ class _AuthenState extends State<Authen> {
       margin: EdgeInsets.only(top: 16),
       width: 200,
       child: TextField(
-        obscureText: true,
+        onChanged: (value) => password = value.trim(),
+        obscureText: statusRedEye,
         decoration: InputDecoration(
+          suffixIcon: IconButton(
+            icon: statusRedEye
+                ? Icon(Icons.remove_red_eye)
+                : Icon(Icons.remove_red_eye_outlined),
+            onPressed: () {
+              setState(() {
+                statusRedEye = !statusRedEye; //เอาค่าตรงข้าม ใส่ตัวแปร
+              });
+            },
+          ),
           prefixIcon: Icon(Icons.lock),
           labelText: 'Password :',
           border: OutlineInputBorder(),
@@ -128,5 +159,23 @@ class _AuthenState extends State<Authen> {
       width: 120,
       child: Image.asset('images/logo.png'),
     );
+  }
+
+  Future<Null> checkAuthen() async {
+    await Firebase.initializeApp().then((value) async {
+      await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: user, password: password)
+          .then(
+            (value) => Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => MyService(),
+                ),
+                (route) => false),
+          )
+          .catchError((value) {
+        normalDialog(context, value.message);
+      });
+    });
   }
 }
