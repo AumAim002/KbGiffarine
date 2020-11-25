@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:kbgiffarine/models/user_model.dart';
 import 'package:kbgiffarine/state/authen.dart';
+import 'package:kbgiffarine/state/ebook.dart';
 import 'package:kbgiffarine/state/information.dart';
 import 'package:kbgiffarine/state/show_list_post.dart';
 
@@ -46,10 +47,11 @@ class _MyServiceState extends State<MyService> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(title),),
+      appBar: AppBar(
+        title: Text(title),
+      ),
       drawer: buildDrawer(),
       body: currentWidget,
-     
     );
   }
 
@@ -65,6 +67,11 @@ class _MyServiceState extends State<MyService> {
                 thickness: 1,
               ),
               buildListTileInformation(),
+              Divider(
+                thickness: 1,
+                color: Colors.blue.shade900,
+              ),
+              buildListTileEbook(),
               Divider(
                 thickness: 1,
                 color: Colors.blue.shade900,
@@ -106,6 +113,25 @@ class _MyServiceState extends State<MyService> {
         setState(() {
           currentWidget = Information();
           title = 'Information';
+        });
+        Navigator.pop(context);
+      },
+    );
+  }
+
+  ListTile buildListTileEbook() {
+    return ListTile(
+      leading: Icon(
+        Icons.book,
+        size: 36,
+        color: Colors.pink.shade700,
+      ),
+      title: Text('Ebook'),
+      subtitle: Text('แสดง Ebook'),
+      onTap: () {
+        setState(() {
+          currentWidget = Ebook();
+          title = 'Ebook';
         });
         Navigator.pop(context);
       },
