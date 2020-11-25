@@ -1,11 +1,15 @@
 import 'dart:io';
 import 'dart:math';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:kbgiffarine/models/post_model.dart';
+import 'package:kbgiffarine/models/user_model.dart';
 import 'package:kbgiffarine/utility/normal_dialog.dart';
 
 class AddPost extends StatefulWidget {
@@ -170,12 +174,47 @@ class _AddPostState extends State<AddPost> {
 
   Future<Null> uploadAndInsertData() async {
     await Firebase.initializeApp().then((value) async {
-      await FirebaseAuth.instance.authStateChanges().listen((event) {
+      await FirebaseAuth.instance.authStateChanges().listen((event) async {
         String uid = event.uid;
         print('uid ===>>> $uid');
-        int i = Random().nextInt(1000000);
-        String nameFile = '$uid$i.jpg';
-        print('nameFile ==>> $nameFile');
+
+        await FirebaseFirestore.instance
+            .collection('user')
+            .doc(uid)
+            .snapshots()
+            .listen((event) async {
+          UserModel userModel = UserModel.fromMap(event.data());
+          String namePost = userModel.name;
+
+          int i = Random().nextInt(1000000);
+          String nameFile = '$uid$i.jpg';
+          print('nameFile ==>> $nameFile');
+
+          FirebaseStorage storage = FirebaseStorage.instance;
+          var refer = storage.ref().child('post/$nameFile');
+          UploadTask task = refer.putFile(file);
+          await task.whenComplete(() async {
+            String urlImage = await refer.getDownloadURL();
+            print('Upload Success urlImage ==>> $urlImage <<==');
+
+            PostModel model = PostModel(
+                title: titlePost,
+                detail: detailPost,
+                uidPost: uid,
+                timePost: timePost,
+                urlImage: urlImage,
+                namePost: namePost);
+
+            Map<String, dynamic> data = model.toMap();
+            await FirebaseFirestore.instance
+                .collection('post')
+                .doc()
+                .set(data)
+                .then(
+                  (value) => Navigator.pop(context),
+                );
+          });
+        });
       });
     });
   }
