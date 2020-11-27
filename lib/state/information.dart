@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:kbgiffarine/models/user_model.dart';
+import 'package:kbgiffarine/state/info_edit.dart';
 
 class Information extends StatefulWidget {
   @override
@@ -43,6 +44,14 @@ class _InformationState extends State<Information> {
       body: userModel == null
           ? Center(child: CircularProgressIndicator())
           : Text(userModel.name),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => InfoEdit(),
+            )),
+        child: Text('Edit'),
+      ),
     );
   }
 }
