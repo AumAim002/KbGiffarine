@@ -8,6 +8,7 @@ class UserModel {
   final String lat;
   final String lng;
   final String urlAvatar;
+  
   UserModel({
     this.name,
     this.email,
@@ -16,6 +17,7 @@ class UserModel {
     this.lng,
     this.urlAvatar,
   });
+  
 
   UserModel copyWith({
     String name,

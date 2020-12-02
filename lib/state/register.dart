@@ -187,7 +187,8 @@ class _RegisterState extends State<Register> {
               email: user,
               password: password,
               lat: lat.toString(),
-              lng: lng.toString());
+              lng: lng.toString(),
+              urlAvatar: 'images/avartar.png');
 
           Map<String, dynamic> data = model.toMap();
           await FirebaseFirestore.instance

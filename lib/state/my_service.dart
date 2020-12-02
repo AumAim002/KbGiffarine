@@ -146,7 +146,7 @@ class _MyServiceState extends State<MyService> {
           fit: BoxFit.cover,
         ),
       ),
-      currentAccountPicture: Image.asset('images/logo.png'),
+      currentAccountPicture: Image.asset(userModel.urlAvatar),
       accountName: Text(
         userModel == null ? 'Name' : userModel.name,
         style: TextStyle(

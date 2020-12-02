@@ -1,7 +1,14 @@
 import 'dart:io';
+import 'dart:math';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:kbgiffarine/models/post_model.dart';
+import 'package:kbgiffarine/models/user_model.dart';
 import 'package:kbgiffarine/utility/normal_dialog.dart';
 
 class InfoEdit extends StatefulWidget {
@@ -28,7 +35,7 @@ class _InfoEditState extends State<InfoEdit> {
             buildPostName(context),
             Container(
               margin: EdgeInsets.only(top: 16),
-              child: statusProcess ? SizedBox() :CircularProgressIndicator(),
+              child: statusProcess ? SizedBox() : CircularProgressIndicator(),
             )
           ],
         ),
@@ -39,11 +46,11 @@ class _InfoEditState extends State<InfoEdit> {
   FloatingActionButton buildFloatingActionButton(BuildContext context) {
     return FloatingActionButton(
       onPressed: () {
+        print('nameInfo ==>> $nameInfo');
         if (file == null) {
           normalDialog(context, 'กรุณาเลือกรูปภาพ ?');
         } else if (nameInfo == null || nameInfo.isEmpty) {
-          print('nameInfo ==>> $nameInfo');
-          //normalDialog(context, 'มีค่าว่าง โปรดระบุ ?');
+          normalDialog(context, 'มีค่าว่าง โปรดระบุ ?');
         } else {
           setState(() {
             statusProcess = false;
@@ -60,7 +67,7 @@ class _InfoEditState extends State<InfoEdit> {
       margin: EdgeInsets.only(top: 16),
       width: MediaQuery.of(context).size.width - 100, //ความกว้างของ Text
       child: TextField(
-        onChanged: (value) => nameInfo = nameInfo.trim(),
+        onChanged: (value) => nameInfo = value.trim(),
         decoration: InputDecoration(
           labelText: 'Display Name',
           border: OutlineInputBorder(),
@@ -119,5 +126,44 @@ class _InfoEditState extends State<InfoEdit> {
     );
   }
 
-  Future<Null> uploadAndEditData() async {}
+  Future<Null> uploadAndEditData() async {
+    await Firebase.initializeApp().then((value) async {
+      await FirebaseAuth.instance.userChanges().listen((event) async {
+        String uid = event.uid;
+        print('uid ==>> $uid');
+        await FirebaseFirestore.instance
+            .collection('user')
+            .doc(uid)
+            .snapshots()
+            .listen((event) async {
+          UserModel userModel = UserModel.fromMap(event.data());
+          String namePost = userModel.name;
+
+          int i = Random().nextInt(1000000);
+          String nameFile = '$uid$i.jpg';
+          print('nameFile ==>> $nameFile');
+
+          FirebaseStorage storage = FirebaseStorage.instance;
+          var refer = storage.ref().child('post/$nameFile');
+          UploadTask task = refer.putFile(file);
+          await task.whenComplete(() async {
+            String urlImage = await refer.getDownloadURL();
+            print('Upload Image OK ==>> $urlImage');
+
+            PostModel postModel = PostModel(
+              namePost: nameInfo,
+              uidPost: uid,
+              urlImage: urlImage,
+            );
+            Map<String, dynamic> data = postModel.toMap();
+            await FirebaseFirestore.instance
+                .collection('user')
+                .doc(uid)
+                .set(data)
+                .then((value) => Navigator.pop(context));
+          });
+        });
+      });
+    });
+  }
 }
