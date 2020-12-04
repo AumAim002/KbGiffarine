@@ -7,7 +7,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:kbgiffarine/models/post_model.dart';
 import 'package:kbgiffarine/models/user_model.dart';
 import 'package:kbgiffarine/utility/normal_dialog.dart';
 
@@ -26,7 +25,7 @@ class _InfoEditState extends State<InfoEdit> {
     return Scaffold(
       floatingActionButton: buildFloatingActionButton(context),
       appBar: AppBar(
-        title: Text('Info Edit Data'),
+        title: Text('Edit Information'),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -109,7 +108,7 @@ class _InfoEditState extends State<InfoEdit> {
             width: MediaQuery.of(context).size.width - 200,
             height: MediaQuery.of(context).size.width - 200,
             child: file == null
-                ? Image.asset('images/avartar.png')
+                ? Image.asset('images/childkid.png')
                 : Image.file(file),
           ),
           IconButton(
@@ -137,7 +136,10 @@ class _InfoEditState extends State<InfoEdit> {
             .snapshots()
             .listen((event) async {
           UserModel userModel = UserModel.fromMap(event.data());
-          String namePost = userModel.name;
+          String email = userModel.email;
+          String lat = userModel.lat;
+          String lng = userModel.lng;
+          String password = userModel.password;
 
           int i = Random().nextInt(1000000);
           String nameFile = '$uid$i.jpg';
@@ -148,14 +150,17 @@ class _InfoEditState extends State<InfoEdit> {
           UploadTask task = refer.putFile(file);
           await task.whenComplete(() async {
             String urlImage = await refer.getDownloadURL();
-            print('Upload Image OK ==>> $urlImage');
+            print('Upload Success urlImage ==>> $urlImage <<==');
 
-            PostModel postModel = PostModel(
-              namePost: nameInfo,
-              uidPost: uid,
-              urlImage: urlImage,
-            );
-            Map<String, dynamic> data = postModel.toMap();
+            UserModel user = UserModel(
+                name: nameInfo,
+                urlAvatar: urlImage,
+                email: email,
+                lat: lat,
+                lng: lng,
+                password: password);
+
+            Map<String, dynamic> data = user.toMap();
             await FirebaseFirestore.instance
                 .collection('user')
                 .doc(uid)

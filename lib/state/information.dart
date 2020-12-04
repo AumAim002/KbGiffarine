@@ -33,8 +33,7 @@ class _InformationState extends State<Information> {
             .listen((event) {
           setState(() {
             userModel = UserModel.fromMap(event.data());
-            print(
-                'name =>> ${userModel.name}, email ==>> ${userModel.email}, lat ==>> ${userModel.lat},lng ==>> ${userModel.lng}');
+            print('name =>> ${userModel.name}, email ==>> ${userModel.email}');
           });
         });
       });
@@ -56,7 +55,7 @@ class _InformationState extends State<Information> {
                         Container(
                           width: 120,
                           height: 120,
-                          child: Image.asset('${userModel.urlAvatar}'),
+                          child: Image.asset(userModel.urlAvatar),
                         ),
                         buildTextName(),
                         buildTextEmail(),
@@ -118,7 +117,7 @@ class _InformationState extends State<Information> {
   }
 
   Text buildTextName() => Text(
-        'Name : ${userModel.name}',
+         'Name : ${userModel.name}',
         style: TextStyle(
           color: Colors.cyan,
           fontWeight: FontWeight.bold,
@@ -127,7 +126,7 @@ class _InformationState extends State<Information> {
       );
 
   Text buildTextEmail() => Text(
-        'Email : ${userModel.email}',
+        'Email : ${userModel.email}' ,
         style: TextStyle(
           color: Colors.green,
           fontWeight: FontWeight.bold,
